@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -39,18 +40,64 @@ class Canvas {
 }
 
 extension CanvasDrawExtension on Canvas {
-  void setScaledPixel(
-    int x,
-    int y,
-    int scale,
+  void drawLine(
+    int x1,
+    int y1,
+    int x2,
+    int y2,
     int r,
     int g,
     int b, [
     int a = 255,
   ]) {
-    for (int sy = 0; sy < scale; sy++) {
-      for (int sx = 0; sx < scale; sx++) {
-        setPixel(x * scale + sx, y * scale + sy, r, g, b, a);
+    int dx = x2 - x1;
+    int dy = y2 - y1;
+    int dd = sqrt((dx * dx) + (dy * dy)).floor();
+
+    for (int i = 0; i < dd; i++) {
+      int x = x1 + ((dx * i) / dd).floor();
+      int y = y1 + ((dy * i) / dd).floor();
+      setPixel(x, y, r, g, b, a);
+    }
+  }
+
+  void fillRect(
+    int x1,
+    int y1,
+    int x2,
+    int y2,
+    int r,
+    int g,
+    int b, [
+    int a = 255,
+  ]) {
+    for (int y = y1; y < y2; y++) {
+      for (int x = x1; x < x2; x++) {
+        setPixel(x, y, r, g, b, a);
+      }
+    }
+  }
+
+  void fillEllipse(
+    int x1,
+    int y1,
+    int x2,
+    int y2,
+    int r,
+    int g,
+    int b, [
+    int a = 255,
+  ]) {
+    int cx = (x1 + x2) ~/ 2;
+    int cy = (y1 + y2) ~/ 2;
+
+    for (int y = y1; y < y2; y++) {
+      for (int x = x1; x < x2; x++) {
+        if (((x - cx) * (x - cx) / (x2 - cx) / (x2 - cx) +
+                (y - cy) * (y - cy) / (y2 - cy) / (y2 - cy)) <=
+            1) {
+          setPixel(x, y, r, g, b, a);
+        }
       }
     }
   }
